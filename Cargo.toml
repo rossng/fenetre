@@ -1,0 +1,6 @@
+[package]
+name = "fenetre"
+version = "0.1.0"
+authors = ["Ross Gardiner <ross-public@gmx.com>", "Alessio Zakaria <alessio.b.zakaria@gmail.com>"]
+
+[dependencies]
