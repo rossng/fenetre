@@ -5,7 +5,7 @@ use piston_window::math::Matrix2d;
 use piston_window::types::Color;
 
 use game_state::GameState;
-use models::{Player, World};
+use models::{Player, Scene};
 use drawing::colour;
 
 /// Renders the game to the screen
@@ -14,11 +14,11 @@ pub fn render_game(c: Context, g: &mut GlGraphics, state: &GameState) {
     piston_window::clear(colour::BLACK, g);
 
     // Render the world
-    render_world(&state.world, c, g);
+    render_world(&state.scene, c, g);
 }
 
 /// Renders the world and everything in it
-pub fn render_world(world: &World, c: Context, g: &mut GlGraphics) {
+pub fn render_world(world: &Scene, c: Context, g: &mut GlGraphics) {
     render_player(&world.player, &c, g);
 }
 

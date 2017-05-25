@@ -1,12 +1,16 @@
 #![deny(missing_docs)]
 #![cfg_attr(feature="clippy", feature(plugin))]
 #![cfg_attr(feature="clippy", plugin(clippy))]
+#![feature(core_intrinsics)]
 
 //! A 2D toy game written in Rust, using the Piston library.
 
 extern crate piston_window;
 extern crate itertools_num;
 extern crate opengl_graphics;
+extern crate nalgebra as na;
+extern crate ncollide;
+extern crate nphysics2d;
 
 mod controllers;
 mod game_state;
@@ -19,6 +23,7 @@ use opengl_graphics::GlGraphics;
 
 use controllers::{InputController, TimeController};
 use game_state::GameState;
+use std::ops::Deref;
 
 fn main() {
     let opengl = OpenGL::V3_2;

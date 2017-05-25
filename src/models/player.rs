@@ -1,13 +1,23 @@
+use std::rc::Rc;
+use std::cell::RefCell;
+use nphysics2d::object::RigidBody;
+use nphysics2d::world::World;
+use ncollide::shape::{Plane, Cuboid};
+use na::{Vector1, Vector2, Translation2};
+
 /// The `Player` is the rocket controlled by the user
-#[derive(Default)]
 pub struct Player {
     pub x: f64,
-    pub y: f64
+    pub y: f64,
+    pub rb_handle: Rc<RefCell<RigidBody<f64>>>
 }
 
 impl Player {
     /// Create a new `Player` with a random position and direction
-    pub fn new() -> Player {
-        Player { x: 0.0, y: 0.0 }
+    pub fn new(world: &mut World<f64>) -> Player {
+        let player = Cuboid::new(Vector2::new(0.5, 0.5));
+        let mut rb = RigidBody::new_dynamic(player, 0.1, 0.3, 0.6);
+        let rb_handle = world.add_rigid_body(rb);
+        Player { x: 0.0, y: 0.0, rb_handle: rb_handle }
     }
 }

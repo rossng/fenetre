@@ -1,5 +1,5 @@
 mod player;
-mod world;
+mod scene;
 
 pub use self::player::{Player};
-pub use self::world::World;
+pub use self::scene::Scene;
