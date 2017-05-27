@@ -8,9 +8,7 @@
 extern crate piston_window;
 extern crate itertools_num;
 extern crate opengl_graphics;
-extern crate nalgebra as na;
-extern crate ncollide;
-extern crate nphysics2d;
+extern crate graphics;
 
 mod controllers;
 mod game_state;

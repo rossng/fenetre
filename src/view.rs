@@ -3,7 +3,6 @@ use piston_window::{self, Context, Transformed};
 use piston_window::ellipse::Ellipse;
 use piston_window::math::Matrix2d;
 use piston_window::types::Color;
-use na::geometry::Translation;
 
 use game_state::GameState;
 use models::{Player, Scene};
@@ -45,10 +44,8 @@ fn print_type_of<T>(_: &T) {
 
 /// Render the player
 pub fn render_player(player: &Player, c: &Context, gl: &mut GlGraphics) {
-    // Set the center of the player as the origin and rotate it
-    let ref rb_handle = player.rb_handle;
     let transform = c.transform
-        .trans(rb_handle.borrow().position().translation.vector[0], rb_handle.borrow().position().translation.vector[1]);
+        .trans(player.shape[0], player.shape[1]);
 
     // Draw an ellipse on the position of the player
     piston_window::ellipse(colour::RED, [0.0, 0.0, 50.0, 50.0], transform, gl)
