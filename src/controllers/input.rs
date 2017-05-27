@@ -35,6 +35,7 @@ impl InputController {
 
     /// Handles a key press or release
     fn handle_key(&mut self, key: Key, pressed: bool) {
+        println!("Key {:?} pressed: {}", key, pressed);
         match key {
             Key::Left => self.actions.move_left = pressed,
             Key::Right => self.actions.move_right = pressed,

@@ -3,6 +3,7 @@ use piston_window::{self, Context, Transformed};
 use piston_window::ellipse::Ellipse;
 use piston_window::math::Matrix2d;
 use piston_window::types::Color;
+use na::geometry::Translation;
 
 use game_state::GameState;
 use models::{Player, Scene};
@@ -14,11 +15,11 @@ pub fn render_game(c: Context, g: &mut GlGraphics, state: &GameState) {
     piston_window::clear(colour::BLACK, g);
 
     // Render the world
-    render_world(&state.scene, c, g);
+    render_scene(&state.scene, c, g);
 }
 
 /// Renders the world and everything in it
-pub fn render_world(world: &Scene, c: Context, g: &mut GlGraphics) {
+pub fn render_scene(world: &Scene, c: Context, g: &mut GlGraphics) {
     render_player(&world.player, &c, g);
 }
 
@@ -38,11 +39,16 @@ fn ellipse(color: Color, rectangle: [f64; 4], transform: Matrix2d, graphics: &mu
         graphics);
 }
 
+fn print_type_of<T>(_: &T) {
+    println!("{}", unsafe { ::std::intrinsics::type_name::<T>() });
+}
+
 /// Render the player
 pub fn render_player(player: &Player, c: &Context, gl: &mut GlGraphics) {
     // Set the center of the player as the origin and rotate it
+    let ref rb_handle = player.rb_handle;
     let transform = c.transform
-        .trans(player.x, player.y);
+        .trans(rb_handle.borrow().position().translation.vector[0], rb_handle.borrow().position().translation.vector[1]);
 
     // Draw an ellipse on the position of the player
     piston_window::ellipse(colour::RED, [0.0, 0.0, 50.0, 50.0], transform, gl)

@@ -20,8 +20,7 @@ impl GameState {
     /// Reset our game-state
     pub fn reset(&mut self) {
         // Reset player position
-        self.scene.player.x = 0.0;
-        self.scene.player.y = 0.0;
+        // TODO
 
         // Reset score
         self.score = 0;
