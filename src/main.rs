@@ -9,6 +9,8 @@ extern crate piston_window;
 extern crate itertools_num;
 extern crate opengl_graphics;
 extern crate graphics;
+extern crate nalgebra;
+extern crate ncollide;
 
 mod controllers;
 mod game_state;
@@ -16,12 +18,11 @@ mod models;
 mod view;
 mod drawing;
 
-use piston_window::{Button, EventLoop, Input, Motion, OpenGL, PistonWindow, WindowSettings};
+use piston_window::{Button, EventLoop, Input, OpenGL, PistonWindow, WindowSettings};
 use opengl_graphics::GlGraphics;
 
 use controllers::{InputController, TimeController};
 use game_state::GameState;
-use std::ops::Deref;
 
 fn main() {
     let opengl = OpenGL::V3_2;

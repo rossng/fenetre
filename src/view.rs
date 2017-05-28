@@ -22,7 +22,7 @@ pub fn render_scene(world: &Scene, c: Context, g: &mut GlGraphics) {
     render_player(&world.player, &c, g);
 }
 
-fn ellipse(color: Color, rectangle: [f64; 4], transform: Matrix2d, graphics: &mut GlGraphics)
+/*fn ellipse(color: Color, rectangle: [f64; 4], transform: Matrix2d, graphics: &mut GlGraphics)
 {
     // There's piston_window::ellipse, but it uses a resolution of 128
     // which is unnecessarily high. Using 16 is much quicker to draw,
@@ -36,11 +36,11 @@ fn ellipse(color: Color, rectangle: [f64; 4], transform: Matrix2d, graphics: &mu
         &Default::default(),
         transform,
         graphics);
-}
+}*/
 
-fn print_type_of<T>(_: &T) {
+/*fn print_type_of<T>(_: &T) {
     println!("{}", unsafe { ::std::intrinsics::type_name::<T>() });
-}
+}*/
 
 /// Render the player
 pub fn render_player(player: &Player, c: &Context, gl: &mut GlGraphics) {

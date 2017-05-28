@@ -20,13 +20,6 @@ impl TimeController {
     /// `dt` is the amount of seconds that have passed since the last update
     pub fn update_seconds(&mut self, dt: f64, actions: &Actions, state: &mut GameState) {
         self.current_time += dt;
-
-        if actions.move_left == actions.move_right {
-        } else {
-            if actions.move_left {
-            };
-            if actions.move_right {
-            };
-        }
+        state.scene.step(dt, actions);
     }
 }
