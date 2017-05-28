@@ -8,6 +8,7 @@ use piston_window::types::Color;
 use game_state::GameState;
 use models::{Player, Scene};
 use drawing::colour;
+use na::Vector2;
 use ncollide::world::CollisionWorld2;
 use ncollide::shape::{Plane, Ball, Cuboid, ShapeHandle2};
 use models::scene::CollisionObjectData;
@@ -62,6 +63,12 @@ pub fn render_player(world: &CollisionWorld2<f64, CollisionObjectData>, c: &Cont
     if player_object.shape.is_shape::<Ball<f64>>() {
         if let Some(ball) = player_object.shape.as_shape::<Ball<f64>>() {
             piston_window::ellipse(colour::WHITE, [-ball.radius(), -ball.radius(), ball.radius()*2.0, ball.radius()*2.0], transform, gl);
+        }
+    }
+
+    if player_object.shape.is_shape::<Cuboid<Vector2<f64>>>() {
+        if let Some(rect) = player_object.shape.as_shape::<Cuboid<Vector2<f64>>>() {
+            piston_window::rectangle(colour::WHITE, [-rect.half_extents()[0], -rect.half_extents()[1], rect.half_extents()[0]*2.0, rect.half_extents()[1]*2.0], transform, gl);
         }
     }
 }
