@@ -9,7 +9,7 @@
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="RustProjectSettings">
-    <option name="toolchainHomeDirectory" value="C:\Users\ross\.cargo\bin" />
+    <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
     <option name="useCargoCheckForBuild" value="true" />
   </component>
   <component name="masterDetails">

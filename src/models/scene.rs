@@ -81,12 +81,12 @@ impl Scene {
         world_groups.set_membership(&[2]);
         world_groups.set_whitelist(&[1]);
 
-        let floor = ShapeHandle2::new(Plane::new(Vector2::new(0.0, -1.0)));
-        let floor_pos = Isometry2::new(Vector2::new(0.0, 200.0), na::zero());
+        let floor = ShapeHandle2::new(Cuboid::new(Vector2::new(600.0, 20.0)));
+        let floor_pos = Isometry2::new(Vector2::new(600.0, 200.0), na::zero());
         let floor_data = CollisionObjectData::new("floor", None);
 
         let player = ShapeHandle2::new(Ball::new(50.0));
-        let player_pos = Isometry2::new(Vector2::new(0.0, 0.0), na::zero());
+        let player_pos = Isometry2::new(Vector2::new(100.0, 100.0), na::zero());
         let player_data = CollisionObjectData::new("player", Some(Vector2::new(0.0, 10.0)));
 
         collision_world.deferred_add(0, floor_pos, floor, world_groups, GeometricQueryType::Contacts(0.0), floor_data);
@@ -113,7 +113,7 @@ impl Scene {
             player_pos = player_displacement * player_object.position;
         }
 
-        println!("{:?}", player_pos);
+        //println!("{:?}", player_pos);
 
         self.collision_world.deferred_set_position(1, player_pos);
 
