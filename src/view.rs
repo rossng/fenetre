@@ -7,6 +7,8 @@ use piston_window::types::Color;
 use game_state::GameState;
 use models::{Player, Scene};
 use drawing::colour;
+use ncollide::world::CollisionWorld2;
+use models::scene::CollisionObjectData;
 
 /// Renders the game to the screen
 pub fn render_game(c: Context, g: &mut GlGraphics, state: &GameState) {
@@ -18,8 +20,8 @@ pub fn render_game(c: Context, g: &mut GlGraphics, state: &GameState) {
 }
 
 /// Renders the world and everything in it
-pub fn render_scene(world: &Scene, c: Context, g: &mut GlGraphics) {
-    render_player(&world.player, &c, g);
+pub fn render_scene(scene: &Scene, c: Context, g: &mut GlGraphics) {
+    render_player(&scene.collision_world, &c, g);
 }
 
 /*fn ellipse(color: Color, rectangle: [f64; 4], transform: Matrix2d, graphics: &mut GlGraphics)
@@ -43,9 +45,9 @@ pub fn render_scene(world: &Scene, c: Context, g: &mut GlGraphics) {
 }*/
 
 /// Render the player
-pub fn render_player(player: &Player, c: &Context, gl: &mut GlGraphics) {
-    let transform = c.transform
-        .trans(player.shape[0], player.shape[1]);
+pub fn render_player(world: &CollisionWorld2<f64, CollisionObjectData>, c: &Context, gl: &mut GlGraphics) {
+    let player_object = world.collision_object(1).unwrap();
+    let transform = c.transform.trans(player_object.position.translation.vector[0], player_object.position.translation.vector[1]);
 
     // Draw an ellipse on the position of the player
     piston_window::ellipse(colour::RED, [0.0, 0.0, 50.0, 50.0], transform, gl)

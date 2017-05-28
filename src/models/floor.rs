@@ -7,7 +7,7 @@ pub struct Floor {
 impl Floor {
     /// Create a new `Player` with a random position and direction
     pub fn new() -> Floor {
-        Floor { shape: [0.0, 0.0, 50.0, 50.0] }
+        Floor { shape: [0.0, 0.0, 1000.0, 50.0] }
     }
 
     pub fn x(&self) -> f64 {

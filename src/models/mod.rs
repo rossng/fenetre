@@ -1,8 +1,9 @@
 extern crate ncollide;
+extern crate nalgebra as na;
 
 mod player;
 mod floor;
-mod scene;
+pub mod scene;
 
 pub use self::player::{Player};
 pub use self::floor::{Floor};
