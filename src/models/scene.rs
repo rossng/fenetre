@@ -7,7 +7,10 @@ use na;
 use ncollide::world::{CollisionWorld, CollisionGroups, GeometricQueryType, CollisionObject2};
 use ncollide::narrow_phase::{ProximityHandler, ContactHandler, ContactAlgorithm2};
 use ncollide::shape::{Plane, Ball, Cuboid, ShapeHandle2};
-use ncollide::query::Proximity;
+use ncollide::query::{Proximity, Contact};
+use na::core::dimension::{U1, U2};
+use na::geometry::PointBase;
+use na::core::MatrixArray;
 
 /// A model that contains the other models and renders them
 pub struct Scene {
@@ -46,17 +49,35 @@ impl ContactHandler<Point2<f64>, Isometry2<f64>, CollisionObjectData> for Object
                               co2: &CollisionObject2<f64, CollisionObjectData>,
                               alg: &ContactAlgorithm2<f64>) {
         // NOTE: real-life applications would avoid this systematic allocation.
-        //let mut collector = Vec::new();
-        //alg.contacts(&mut collector);
+        let mut contacts : Vec<Contact<PointBase<f64, U2, MatrixArray<f64, U2, U1>>>> = Vec::new();
+        alg.contacts(&mut contacts);
 
-        // The ball is the one with a non-None velocity.
+        // The player is the one with a non-None velocity.
         if let Some(ref vel) = co1.data.velocity {
             println!("Stopping player {} after hitting {}", co1.data.name, co2.data.name);
-            vel.set(Vector2::new(0.0, 0.0));
+            if co1.shape.is_shape::<Cuboid<Vector2<f64>>>() {
+                if let Some(rect) = co1.shape.as_shape::<Cuboid<Vector2<f64>>>() {
+                    for contact in &contacts {
+                        let c : &Contact<PointBase<f64, U2, MatrixArray<f64, U2, U1>>> = contact;
+                        if c.world1[1] > co1.position.translation.vector[1] + rect.half_extents()[1] - 10.0 {
+                            vel.set(Vector2::new(vel.get()[0], 0.0));
+                        }
+                    }
+                }
+            }
         }
         if let Some(ref vel) = co2.data.velocity {
             println!("Stopping player {} after hitting {}", co2.data.name, co1.data.name);
-            vel.set(Vector2::new(0.0, 0.0));
+            if co2.shape.is_shape::<Cuboid<Vector2<f64>>>() {
+                if let Some(rect) = co2.shape.as_shape::<Cuboid<Vector2<f64>>>() {
+                    for contact in &contacts {
+                        let c : &Contact<PointBase<f64, U2, MatrixArray<f64, U2, U1>>> = contact;
+                        if c.world1[1] > co2.position.translation.vector[1] + rect.half_extents()[1] - 10.0 {
+                            vel.set(Vector2::new(vel.get()[0], 0.0));
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -104,16 +125,18 @@ impl Scene {
 
     pub fn step(&mut self, dt: f64, actions: &Actions) {
         let player_pos;
+        let gravity = 10.0;
 
         {
             let player_object = self.collision_world.collision_object(1).unwrap();
+            if let Some(ref vel) = player_object.data.velocity {
+                vel.set(Vector2::new(vel.get()[0], vel.get()[1] + gravity * dt))
+            }
             let player_velocity = player_object.data.velocity.as_ref().unwrap();
 
             let player_displacement = Translation2::from_vector(dt * player_velocity.get());
             player_pos = player_displacement * player_object.position;
         }
-
-        //println!("{:?}", player_pos);
 
         self.collision_world.deferred_set_position(1, player_pos);
 

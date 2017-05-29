@@ -25,7 +25,7 @@ pub fn render_game(c: Context, g: &mut GlGraphics, state: &GameState) {
 /// Renders the world and everything in it
 pub fn render_scene(scene: &Scene, c: Context, g: &mut GlGraphics) {
     render_player(&scene.collision_world, &c, g);
-    render_plane(&scene.collision_world, &c, g);
+    render_floor(&scene.collision_world, &c, g);
     render_contacts(&scene.collision_world, &c, g);
 }
 
@@ -42,7 +42,7 @@ pub fn render_contacts(world: &CollisionWorld2<f64, CollisionObjectData>, c: &Co
     }
 }
 
-pub fn render_plane(world: &CollisionWorld2<f64, CollisionObjectData>, c: &Context, gl: &mut GlGraphics) {
+pub fn render_floor(world: &CollisionWorld2<f64, CollisionObjectData>, c: &Context, gl: &mut GlGraphics) {
     let player_object = world.collision_object(0).unwrap();
     let player_aabb = player_object.shape.aabb(&player_object.position);
     let transform = c.transform.trans(player_object.position.translation.vector[0], player_object.position.translation.vector[1]);
