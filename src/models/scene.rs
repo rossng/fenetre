@@ -9,8 +9,9 @@ use ncollide::narrow_phase::{ProximityHandler, ContactHandler, ContactAlgorithm2
 use ncollide::shape::{Plane, Ball, Cuboid, ShapeHandle2};
 use ncollide::query::{Proximity, Contact};
 use na::core::dimension::{U1, U2};
-use na::geometry::PointBase;
+use na::geometry::{PointBase, Translation};
 use na::core::MatrixArray;
+use alga::linear::AffineTransformation;
 
 /// A model that contains the other models and renders them
 pub struct Scene {
@@ -21,22 +22,21 @@ pub struct Scene {
 #[derive(Clone)]
 pub struct CollisionObjectData {
     pub name: &'static str,
-    pub velocity: Option<Cell<Vector2<f64>>>
+    pub velocity: Option<Cell<Vector2<f64>>>,
+    pub depenetration: Option<Cell<Vector2<f64>>>
+}
+
+pub enum ObjectType {
+    Static,
+    Dynamic
 }
 
 impl CollisionObjectData {
-    pub fn new(name: &'static str, velocity: Option<Vector2<f64>>) -> CollisionObjectData {
-        let init_velocity;
-        if let Some(velocity) = velocity {
-            init_velocity = Some(Cell::new(velocity))
-        }
-            else {
-                init_velocity = None
-            }
-
+    pub fn new(name: &'static str, velocity: Option<Vector2<f64>>, object_type: ObjectType) -> CollisionObjectData {
         CollisionObjectData {
             name:     name,
-            velocity: init_velocity
+            velocity: match velocity { Some(vel) => Some(Cell::new(vel)), None => None },
+            depenetration: match object_type { ObjectType::Dynamic => Some(Cell::new(Vector2::new(0.0, 0.0))), ObjectType::Static => None }
         }
     }
 }
@@ -61,6 +61,10 @@ impl ContactHandler<Point2<f64>, Isometry2<f64>, CollisionObjectData> for Object
                         let c : &Contact<PointBase<f64, U2, MatrixArray<f64, U2, U1>>> = contact;
                         if c.world1[1] > co1.position.translation.vector[1] + rect.half_extents()[1] - 10.0 {
                             vel.set(Vector2::new(vel.get()[0], 0.0));
+                            if let Some(ref depenetration) = co1.data.depenetration {
+                                println!("Collision normal: {}, depth {}", c.normal, c.depth);
+                                depenetration.set(c.normal * c.depth * -1.0);
+                            }
                         }
                     }
                 }
@@ -74,6 +78,10 @@ impl ContactHandler<Point2<f64>, Isometry2<f64>, CollisionObjectData> for Object
                         let c : &Contact<PointBase<f64, U2, MatrixArray<f64, U2, U1>>> = contact;
                         if c.world1[1] > co2.position.translation.vector[1] + rect.half_extents()[1] - 10.0 {
                             vel.set(Vector2::new(vel.get()[0], 0.0));
+                            if let Some(ref depenetration) = co2.data.depenetration {
+                                println!("Collision normal: {}, depth {}", c.normal, c.depth);
+                                depenetration.set(c.normal * c.depth * -1.0);
+                            }
                         }
                     }
                 }
@@ -104,11 +112,11 @@ impl Scene {
 
         let floor = ShapeHandle2::new(Cuboid::new(Vector2::new(110.0, 20.0)));
         let floor_pos = Isometry2::new(Vector2::new(200.0, 200.0), na::zero());
-        let floor_data = CollisionObjectData::new("floor", None);
+        let floor_data = CollisionObjectData::new("floor", None, ObjectType::Static);
 
         let player = ShapeHandle2::new(Cuboid::new(Vector2::new(20.0, 50.0)));
         let player_pos = Isometry2::new(Vector2::new(100.0, 100.0), na::zero());
-        let player_data = CollisionObjectData::new("player", Some(Vector2::new(0.0, 10.0)));
+        let player_data = CollisionObjectData::new("player", Some(Vector2::new(0.0, 10.0)), ObjectType::Dynamic);
 
         collision_world.deferred_add(0, floor_pos, floor, world_groups, GeometricQueryType::Contacts(0.0), floor_data);
         collision_world.deferred_add(1, player_pos, player, player_groups, GeometricQueryType::Contacts(0.0), player_data);
@@ -139,7 +147,19 @@ impl Scene {
         }
 
         self.collision_world.deferred_set_position(1, player_pos);
+        self.collision_world.update();
 
+        let player_pos;
+        {
+            let player_object = self.collision_world.collision_object(1).unwrap();
+
+            let player_depenetration = player_object.data.depenetration.as_ref().unwrap();
+
+            let player_displacement = Translation2::from_vector(player_depenetration.get());
+            player_pos = player_displacement * player_object.position;
+        }
+
+        self.collision_world.deferred_set_position(1, player_pos);
         self.collision_world.update();
 
         /*if actions.move_left == actions.move_right {

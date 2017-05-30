@@ -1,5 +1,6 @@
 extern crate ncollide;
 extern crate nalgebra as na;
+extern crate alga;
 
 mod player;
 mod floor;

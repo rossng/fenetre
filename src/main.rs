@@ -11,6 +11,7 @@ extern crate opengl_graphics;
 extern crate graphics;
 extern crate nalgebra as na;
 extern crate ncollide;
+extern crate alga;
 
 mod controllers;
 mod game_state;
